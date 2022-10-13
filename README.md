@@ -4,6 +4,34 @@
 
 Внутри конейнера Django запускается с помощью Nginx Unit, не путать с Nginx. Сервер Nginx Unit выполняет сразу две функции: как веб-сервер он раздаёт файлы статики и медиа, а в роли сервера-приложений он запускает Python и Django. Таким образом Nginx Unit заменяет собой связку из двух сервисов Nginx и Gunicorn/uWSGI. [Подробнее про Nginx Unit](https://unit.nginx.org/).
 
+## Развертывание сайта в Kubernetes
+
+Соберите и загрузите образ в кластер, используя файл `/backend_main_django/Dockerfile` Например, при использовании **minikube** это можно сделать командой
+
+    minikube image build . -t django_app:1.1 #это название используется при дальнейшем развертывании образа, в случае необходимости его можно заменить.
+
+Для передачи переменных окружения (см. ниже) создайте файл `django-config.yml` следующего содержания:
+
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+        name: django-config
+    data:
+        SECRET_KEY: {}
+        DATABASE_URL: {}
+        ALLOWED_HOSTS: {}
+        DEBUG: {}
+
+Разверните контейнер в Kubernetes, выполнив в корневом каталоге репозитория команду
+
+    kubectl apply -f django-config.yml && kubectl apply -f django-deployment.yml
+
+Сайт будет доступен на адресе вашего кластера на порту 30036.
+
+В случае внесения каких-либо изменений в настройки контейнера в соответствующих файлах обновить контейнеры в kubernetes можно при помощи следующей команды:
+
+    kubectl apply -f django-config.yml && kubectl rollout restart deployment
+
 ## Как запустить dev-версию
 
 Запустите базу данных и сайт:
