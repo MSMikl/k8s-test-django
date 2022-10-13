@@ -24,13 +24,29 @@
 
 Разверните контейнер в Kubernetes, выполнив в корневом каталоге репозитория команду
 
-    kubectl apply -f django-config.yml && kubectl apply -f django-deployment.yml
+    kubectl apply -f django-config.yml && kubectl apply -f django-deploy.yaml
 
 Сайт будет доступен на адресе вашего кластера на порту 30036.
 
 В случае внесения каких-либо изменений в настройки контейнера в соответствующих файлах обновить контейнеры в kubernetes можно при помощи следующей команды:
 
     kubectl apply -f django-config.yml && kubectl rollout restart deployment
+
+### Настройка Ingress-контроллера
+
+Для безопасного доступа к контейнерам извне применяется Ingress-контроллер. В случае использования **minikube** он уже встроен и активируется командой
+
+    minikube addons enable ingress
+
+Настройки контроллера находятся в файле `ingress-django.yml`. Для запуска контроллера выполните команду
+
+    kubectl create -f ingress-django.yml
+
+Отредактируйте файл `hosts`, добавив в него строку:
+
+    {IP виртуальной машины с minikube} star-burger.test
+
+После этого сайт будет доступен локально по адресу http://star-burger.test
 
 ## Как запустить dev-версию
 
