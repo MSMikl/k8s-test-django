@@ -5,3 +5,4 @@ __pycache__/
 venv/
 *django-config*
 *django_app*
+*helm*

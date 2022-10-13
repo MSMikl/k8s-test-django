@@ -24,6 +24,25 @@ spec:
         args: ["manage.py", "runserver", "0.0.0.0:8000"]
        
 ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate
+spec:
+  template:
+    spec:
+      containers:
+      - name: django
+        image: django_app:1.1
+        envFrom:
+          - configMapRef:
+              name: django-config
+        command: ["python3"]
+        args: ["manage.py", "migrate", "--no-input"]
+      restartPolicy: OnFailure
+  backoffLimit: 4
+
+---
 apiVersion: v1
 kind: Service
 metadata:
